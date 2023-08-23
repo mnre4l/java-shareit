@@ -68,8 +68,9 @@ public class UserController {
     /**
      * Эндпоинт /users/userId
      * Предназначен для обновления пользователя
+     *
      * @param userDtoUpdated DTO обновленного пользователя
-     * @param userId id пользователя, которого нужно обновить
+     * @param userId         id пользователя, которого нужно обновить
      * @return обновленный пользователь (DTO)
      */
     @PatchMapping("/users/{userId}")
@@ -81,6 +82,7 @@ public class UserController {
 
     /**
      * Эндпоинт DELETE users/userId. Предназначен для удаления пользователя
+     *
      * @param userId id пользователя, которого необходимо удалить
      */
     @DeleteMapping("/users/{userId}")

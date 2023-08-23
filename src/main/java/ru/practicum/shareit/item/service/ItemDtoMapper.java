@@ -20,6 +20,7 @@ public class ItemDtoMapper {
 
     /**
      * Метод предназначен для маппинга Item -> ItemDto
+     *
      * @param item Item-объект
      * @return ItemDto-объект
      */
@@ -29,6 +30,7 @@ public class ItemDtoMapper {
 
     /**
      * Метод предназначен для маппинга ItemDto -> Item
+     *
      * @param itemDto ItemDto-объект
      * @return Item-объект
      */
@@ -38,8 +40,9 @@ public class ItemDtoMapper {
 
     /**
      * Метод предназначен для маппинга ItemDto -> уже созданный Item
+     *
      * @param itemDto ItemDto-объект
-     * @param item уже созданный Item-объект
+     * @param item    уже созданный Item-объект
      */
     public void fromDto(ItemDto itemDto, Item item) {
         mapper.map(itemDto, item);
@@ -47,8 +50,9 @@ public class ItemDtoMapper {
 
     /**
      * Метод используется при создании вещей с целью установки пользователя-создателя в поле к вещи
+     *
      * @param itemDto ItemDto-объект вещи
-     * @param owner Объект пользователя
+     * @param owner   Объект пользователя
      * @return Item с установленным полем User-создателя (owner)
      */
     public Item fromDto(ItemDto itemDto, User owner) {

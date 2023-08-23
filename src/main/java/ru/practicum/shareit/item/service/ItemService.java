@@ -10,6 +10,7 @@ import java.util.List;
 public interface ItemService {
     /**
      * Метод предназначен для создания вещи
+     *
      * @param itemDto DTO создаваемой вещи
      * @param ownerId id пользователя, который создает вещь
      * @return DTO созданной вещи
@@ -18,7 +19,8 @@ public interface ItemService {
 
     /**
      * Метод предназначен для получения вещи по ее id
-     * @param itemId id вещи
+     *
+     * @param itemId            id вещи
      * @param userIdRequestFrom id пользователя, который выполняет запрос
      * @return вещь по ее id
      */
@@ -26,21 +28,24 @@ public interface ItemService {
 
     /**
      * Получение списка всех вещей
+     *
      * @return список всех вещей
      */
     List<ItemDto> getAll();
 
     /**
      * Обновление уже созданной вещи
-     * @param itemId id обновляемой вещи
+     *
+     * @param itemId            id обновляемой вещи
      * @param userIdRequestFrom id пользователя, который выполняет запрос
-     * @param itemDto DTO обновленной вещи
+     * @param itemDto           DTO обновленной вещи
      * @return обновленный DTO вещи
      */
     ItemDto updateItem(long itemId, long userIdRequestFrom, ItemDto itemDto);
 
     /**
      * Получение списка всех вещей пользователя по его id
+     *
      * @param ownerId пользователь, чьи вещи запрашиваются
      * @return список вещей этого пользователя
      */
@@ -48,6 +53,7 @@ public interface ItemService {
 
     /**
      * Поиск вещей по описанию
+     *
      * @param text текст, содержащий описание
      * @return списо подходящих вещей
      */

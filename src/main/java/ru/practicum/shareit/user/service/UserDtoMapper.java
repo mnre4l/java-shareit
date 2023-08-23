@@ -19,6 +19,7 @@ public class UserDtoMapper {
 
     /**
      * Метод предназначен для маппинга User -> UserDTO
+     *
      * @param user объект пользователя
      * @return DTO объект пользователя
      */
@@ -28,8 +29,9 @@ public class UserDtoMapper {
 
     /**
      * Метод предназначен для маппинга UserDto -> User без создания нового объекта пользователя
+     *
      * @param userDto DTO пользователя
-     * @param user уже созданный объект пользователя
+     * @param user    уже созданный объект пользователя
      */
     public void fromDto(UserDto userDto, User user) {
         mapper.map(userDto, user);
@@ -37,6 +39,7 @@ public class UserDtoMapper {
 
     /**
      * Метод предназначен для маппинга UserDto -> User
+     *
      * @param userDto DTO объект пользователя
      * @return объект пользователя
      */

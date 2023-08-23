@@ -80,7 +80,8 @@ public class ItemServiceBase implements ItemService {
 
     /**
      * Метод предназначен для проверки, является ли пользователем владельцем вещи
-     * @param item объект вещи
+     *
+     * @param item   объект вещи
      * @param userId преподалагемый владелец вещи (id)
      */
     private void checkIsUserItemOwner(Item item, long userId) {
@@ -107,6 +108,7 @@ public class ItemServiceBase implements ItemService {
 
     /**
      * Служебный метод, предназначе для получения вещи из репозитория в форме модели
+     *
      * @param itemId id вещи
      * @return объект вещи
      */

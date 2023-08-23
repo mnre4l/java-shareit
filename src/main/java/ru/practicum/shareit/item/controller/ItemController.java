@@ -30,6 +30,7 @@ public class ItemController {
 
     /**
      * Добавление вещи в репозиторий
+     *
      * @param ownerId пользователь-владелец вещи (id)
      * @param itemDto добавляемая вещь
      * @return созданная вещь
@@ -45,9 +46,10 @@ public class ItemController {
 
     /**
      * Обновление ранее созданной вещи
+     *
      * @param userIdRequestFrom id пользователя, который отправил запрос на обновление вещи
-     * @param itemId id вещи
-     * @param itemDto обновленная вещь
+     * @param itemId            id вещи
+     * @param itemDto           обновленная вещь
      * @return обновленная вещь
      */
     @PatchMapping("/{itemId}")
@@ -62,8 +64,9 @@ public class ItemController {
 
     /**
      * Получение вещи по id
+     *
      * @param userIdRequestFrom id пользователя, который отправил запрос на получение вещи
-     * @param itemId id требуемой вещи
+     * @param itemId            id требуемой вещи
      * @return вещь, найденная по ее id
      */
     @GetMapping("/{itemId}")
@@ -76,6 +79,7 @@ public class ItemController {
 
     /**
      * Получение списка всех вещей пользователя
+     *
      * @param userIdRequestFrom id пользователя, от которого пришел запрос
      * @return список вещей пользователя
      */
@@ -88,6 +92,7 @@ public class ItemController {
 
     /**
      * Получение списка всех вещей, удовлетворяющих поиску
+     *
      * @param text текст, по которому осуществляется поиск
      * @return список подходящих вещей
      */
