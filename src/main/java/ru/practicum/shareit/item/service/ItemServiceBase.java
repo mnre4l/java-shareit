@@ -78,20 +78,6 @@ public class ItemServiceBase implements ItemService {
         return getItemDtoById(itemId, userIdRequestFrom);
     }
 
-    /**
-     * Метод предназначен для проверки, является ли пользователем владельцем вещи
-     *
-     * @param item   объект вещи
-     * @param userId преподалагемый владелец вещи (id)
-     */
-    private void checkIsUserItemOwner(Item item, long userId) {
-        long ownerId = item.getOwner().getId();
-
-        if (ownerId != userId)
-            throw new UserIsNotItemOwnerException(String.format("Пользователь с id = %s не является " +
-                    "владельцем вещи %s. Ее владелец пользователь id = %s", userId, item, ownerId));
-    }
-
     @Override
     public List<ItemDto> getItemsByOwnerId(long userId) {
         return itemRepository.getUserItemsByUserId(userId).stream()
@@ -115,5 +101,19 @@ public class ItemServiceBase implements ItemService {
     private Item getItemById(long itemId) {
         return itemRepository.get(itemId)
                 .orElseThrow(() -> new NotFoundException("Не найден item с id = " + itemId));
+    }
+
+    /**
+     * Метод предназначен для проверки, является ли пользователем владельцем вещи
+     *
+     * @param item   объект вещи
+     * @param userId преподалагемый владелец вещи (id)
+     */
+    private void checkIsUserItemOwner(Item item, long userId) {
+        long ownerId = item.getOwner().getId();
+
+        if (ownerId != userId)
+            throw new UserIsNotItemOwnerException(String.format("Пользователь с id = %s не является " +
+                    "владельцем вещи %s. Ее владелец пользователь id = %s", userId, item, ownerId));
     }
 }

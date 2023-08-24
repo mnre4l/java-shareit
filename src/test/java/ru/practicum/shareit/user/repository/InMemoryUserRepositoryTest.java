@@ -24,21 +24,6 @@ public class InMemoryUserRepositoryTest {
         inMemoryUserRepository = new InMemoryUserRepository();
     }
 
-    private User initFirstUser() {
-        User user = new User();
-
-        user.setName("First user");
-        user.setEmail("first@first.ru");
-        return user;
-    }
-
-    private User initSecondUser() {
-        User user = new User();
-
-        user.setName("Second user");
-        user.setEmail("second@second.ru");
-        return user;
-    }
 
     @Test
     void shouldCreateUsers() {
@@ -87,5 +72,21 @@ public class InMemoryUserRepositoryTest {
     @Test
     void shouldReturnEmptyOptionalWhenGetUnknownUser() {
         assertTrue(inMemoryUserRepository.get(-1L).isEmpty());
+    }
+
+    private User initFirstUser() {
+        User user = new User();
+
+        user.setName("First user");
+        user.setEmail("first@first.ru");
+        return user;
+    }
+
+    private User initSecondUser() {
+        User user = new User();
+
+        user.setName("Second user");
+        user.setEmail("second@second.ru");
+        return user;
     }
 }

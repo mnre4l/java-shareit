@@ -37,24 +37,6 @@ public class InMemoryItemRepository implements ItemRepository {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Метод предназначен для проверки содержания текста в названии или описании вещи.
-     * Сейчас упрощенно, планируется доработать до :
-     * -поиск по каждому слову в someText в отдельности (например, description = "дрель которая сверлит" должно будет найдено
-     * по someText = "дрель сверлит" - сейчас поиск по сабстроке
-     * -ограничение на минимальную длину/кол-во слов в someText и в description (исключени поиска по предлогам и т.д.)
-     *
-     * @param someText таргет-текст для поиска
-     * @param item     вещь, для которой производится проверка
-     * @return содержит ли описание и имя вещи таргет-текст
-     */
-    private boolean isNameOrDescriptionContainText(String someText, Item item) {
-        String name = item.getName().toLowerCase();
-        String description = item.getDescription().toLowerCase();
-
-        return name.contains(someText.toLowerCase()) || description.contains(someText.toLowerCase());
-    }
-
     @Override
     public void create(Item item) {
         item.setId(++id);
@@ -94,5 +76,23 @@ public class InMemoryItemRepository implements ItemRepository {
     @Override
     public void deleteAll() {
         items.clear();
+    }
+
+    /**
+     * Метод предназначен для проверки содержания текста в названии или описании вещи.
+     * Сейчас упрощенно, планируется доработать до :
+     * -поиск по каждому слову в someText в отдельности (например, description = "дрель которая сверлит" должно будет найдено
+     * по someText = "дрель сверлит" - сейчас поиск по сабстроке
+     * -ограничение на минимальную длину/кол-во слов в someText и в description (исключени поиска по предлогам и т.д.)
+     *
+     * @param someText таргет-текст для поиска
+     * @param item     вещь, для которой производится проверка
+     * @return содержит ли описание и имя вещи таргет-текст
+     */
+    private boolean isNameOrDescriptionContainText(String someText, Item item) {
+        String name = item.getName().toLowerCase();
+        String description = item.getDescription().toLowerCase();
+
+        return name.contains(someText.toLowerCase()) || description.contains(someText.toLowerCase());
     }
 }

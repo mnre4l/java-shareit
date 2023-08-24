@@ -20,40 +20,6 @@ public class InMemoryItemRepositoryTest {
     private Item firstItem;
     private Item secondItem;
 
-    private User initFirstUser() {
-        User user = new User();
-
-        user.setName("First user");
-        user.setEmail("first@first.ru");
-        return user;
-    }
-
-    private User initSecondUser() {
-        User user = new User();
-
-        user.setName("Second user");
-        user.setEmail("second@second.ru");
-        return user;
-    }
-
-    private Item initFirstItemWithoutOwner() {
-        Item item = new Item();
-
-        item.setName("First item");
-        item.setDescription("First item description");
-        item.setAvailable(true);
-        return item;
-    }
-
-    private Item initSecondItemWithoutOwner() {
-        Item item = new Item();
-
-        item.setName("Second item");
-        item.setDescription("Second item description");
-        item.setAvailable(true);
-        return item;
-    }
-
     @BeforeEach
     void init() {
         firstItem = initFirstItemWithoutOwner();
@@ -117,5 +83,39 @@ public class InMemoryItemRepositoryTest {
 
         String targetDescription = secondItem.getDescription();
         assertEquals(List.of(secondItem), itemRepository.findItemsBy(targetDescription));
+    }
+
+    private User initFirstUser() {
+        User user = new User();
+
+        user.setName("First user");
+        user.setEmail("first@first.ru");
+        return user;
+    }
+
+    private User initSecondUser() {
+        User user = new User();
+
+        user.setName("Second user");
+        user.setEmail("second@second.ru");
+        return user;
+    }
+
+    private Item initFirstItemWithoutOwner() {
+        Item item = new Item();
+
+        item.setName("First item");
+        item.setDescription("First item description");
+        item.setAvailable(true);
+        return item;
+    }
+
+    private Item initSecondItemWithoutOwner() {
+        Item item = new Item();
+
+        item.setName("Second item");
+        item.setDescription("Second item description");
+        item.setAvailable(true);
+        return item;
     }
 }
