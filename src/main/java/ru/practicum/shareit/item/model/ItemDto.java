@@ -1,32 +1,30 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.utilities.models.Marker;
 
-/**
- * Класс предназначен для описания модели арендуемой вещи.
- */
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Data
-public class Item {
+public class ItemDto {
     /**
      * Наименование вещи.
      */
+    @NotBlank(groups = Marker.OnCreate.class)
     private String name;
     /**
      * Описание вещи.
      */
+    @NotBlank(groups = Marker.OnCreate.class)
     private String description;
-    /**
-     * Пользователь, которому принадлежит вещь.
-     */
-    private User owner;
     /**
      * Доступна ли вещь к аренде.
      */
+    @NotNull(groups = Marker.OnCreate.class)
     private Boolean available;
     /**
      * Идентификатор вещи.
      */
     private Long id;
-
 }
