@@ -1,9 +1,16 @@
 package ru.practicum.shareit.item.repository;
 
+import org.hibernate.cfg.NotYetImplementedException;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
@@ -22,23 +29,25 @@ public class InMemoryItemRepository implements ItemRepository {
     long id;
 
     @Override
-    public List<Item> getUserItemsByUserId(long userId) {
+    public List<Item> findByOwner_Id(long userId) {
         return usersItems.get(userId);
     }
 
     @Override
-    public List<Item> findItemsBy(String someText) {
-        //наверное, по хорошему нужно делать валидацию на someText, но тесты требуют именно пустой лист
-        if (someText.isBlank()) return Collections.emptyList();
+    public List<Item> findByAvailableTrueAndDescriptionContainingIgnoreCase(String someText) {
         return items.values().stream()
                 //только доступные вещи
-                .filter(item -> item.getAvailable() == true)
+                .filter(Item::getAvailable)
                 .filter(item -> isNameOrDescriptionContainText(someText, item))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void create(Item item) {
+    public Item save(Item item) {
+        if (items.containsKey(item.getId())) {
+            items.put(item.getId(), item);
+            return item;
+        }
         item.setId(++id);
         items.put(item.getId(), item);
 
@@ -51,11 +60,7 @@ public class InMemoryItemRepository implements ItemRepository {
             userItems.add(item);
             return userItems;
         });
-    }
-
-    @Override
-    public void update(Item item) {
-        items.put(item.getId(), item);
+        return item;
     }
 
     @Override
@@ -64,13 +69,138 @@ public class InMemoryItemRepository implements ItemRepository {
     }
 
     @Override
-    public Optional<Item> get(Long id) {
+    public void deleteAllById(Iterable<? extends Long> longs) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public void deleteAll(Iterable<? extends Item> entities) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public Optional<Item> findById(Long id) {
         return Optional.ofNullable(items.get(id));
     }
 
     @Override
-    public List<Item> getAll() {
+    public boolean existsById(Long aLong) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public List<Item> findAll() {
         return List.copyOf(items.values());
+    }
+
+    @Override
+    public List<Item> findAll(Sort sort) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public Page<Item> findAll(Pageable pageable) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public List<Item> findAllById(Iterable<Long> longs) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public long count() {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public void deleteById(Long aLong) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item> List<S> saveAll(Iterable<S> entities) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public void flush() {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item> S saveAndFlush(S entity) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item> List<S> saveAllAndFlush(Iterable<S> entities) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public void deleteAllInBatch(Iterable<Item> entities) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<Long> longs) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public void deleteAllInBatch() {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public Item getOne(Long aLong) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public Item getById(Long aLong) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public Item getReferenceById(Long aLong) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item> Optional<S> findOne(Example<S> example) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item> List<S> findAll(Example<S> example) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item> List<S> findAll(Example<S> example, Sort sort) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item> Page<S> findAll(Example<S> example, Pageable pageable) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item> long count(Example<S> example) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item> boolean exists(Example<S> example) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public <S extends Item, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+        throw new NotYetImplementedException();
     }
 
     @Override

@@ -27,8 +27,8 @@ public class InMemoryUserRepositoryTest {
 
     @Test
     void shouldCreateUsers() {
-        inMemoryUserRepository.create(firstUser);
-        inMemoryUserRepository.create(secondUser);
+        inMemoryUserRepository.save(firstUser);
+        inMemoryUserRepository.save(secondUser);
         /*
         проверка, что установился id
          */
@@ -38,40 +38,40 @@ public class InMemoryUserRepositoryTest {
 
     @Test
     void shouldReturnUsers() {
-        inMemoryUserRepository.create(firstUser);
-        inMemoryUserRepository.create(secondUser);
-        assertEquals(Optional.of(firstUser), inMemoryUserRepository.get(1L));
-        assertEquals(Optional.of(secondUser), inMemoryUserRepository.get(2L));
+        inMemoryUserRepository.save(firstUser);
+        inMemoryUserRepository.save(secondUser);
+        assertEquals(Optional.of(firstUser), inMemoryUserRepository.findById(1L));
+        assertEquals(Optional.of(secondUser), inMemoryUserRepository.findById(2L));
     }
 
     @Test
     void shouldDeleteUser() {
-        inMemoryUserRepository.create(firstUser);
+        inMemoryUserRepository.save(firstUser);
 
         long userId = firstUser.getId();
 
         inMemoryUserRepository.delete(firstUser);
-        assertTrue(inMemoryUserRepository.get(userId).isEmpty());
+        assertTrue(inMemoryUserRepository.findById(userId).isEmpty());
     }
 
     @Test
     void shouldReturnAllUsers() {
-        inMemoryUserRepository.create(firstUser);
-        inMemoryUserRepository.create(secondUser);
-        assertEquals(List.of(firstUser, secondUser), inMemoryUserRepository.getAll());
+        inMemoryUserRepository.save(firstUser);
+        inMemoryUserRepository.save(secondUser);
+        assertEquals(List.of(firstUser, secondUser), inMemoryUserRepository.findAll());
     }
 
     @Test
     void shouldDeleteAllUsers() {
-        inMemoryUserRepository.create(firstUser);
-        inMemoryUserRepository.create(secondUser);
+        inMemoryUserRepository.save(firstUser);
+        inMemoryUserRepository.save(secondUser);
         inMemoryUserRepository.deleteAll();
-        assertEquals(Collections.emptyList(), inMemoryUserRepository.getAll());
+        assertEquals(Collections.emptyList(), inMemoryUserRepository.findAll());
     }
 
     @Test
     void shouldReturnEmptyOptionalWhenGetUnknownUser() {
-        assertTrue(inMemoryUserRepository.get(-1L).isEmpty());
+        assertTrue(inMemoryUserRepository.findById(-1L).isEmpty());
     }
 
     private User initFirstUser() {

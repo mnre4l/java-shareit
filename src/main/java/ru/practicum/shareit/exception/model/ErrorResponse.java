@@ -12,11 +12,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ErrorResponse {
     private String message;
+    private StackTraceElement[] stackTraceElements;
 
     /**
      * @param message сообщение об исключении.
      */
     public ErrorResponse(String message) {
         this.message = message;
+    }
+
+    public ErrorResponse(String message, StackTraceElement[] stackTrace) {
+        this.message = message;
+        this.stackTraceElements = stackTrace;
     }
 }

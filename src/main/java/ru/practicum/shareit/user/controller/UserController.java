@@ -47,7 +47,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public UserDto getUser(@PathVariable("userId") long userId) {
         log.info("GET /users/{}", userId);
-        return userService.getUserById(userId);
+        return userService.getUserDtoById(userId);
     }
 
     /**

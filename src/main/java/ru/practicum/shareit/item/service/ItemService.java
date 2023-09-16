@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.service;
 
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemDto;
 
 import java.util.List;
@@ -58,4 +59,10 @@ public interface ItemService {
      * @return списо подходящих вещей
      */
     List<ItemDto> findItemsBy(String text);
+
+    Item getItemById(long itemId);
+
+    void checkIsUserItemOwner(Item item, long userId);
+
+    void checkItemIsAvailable(Item item);
 }

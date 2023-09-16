@@ -30,15 +30,15 @@ public class InMemoryItemRepositoryTest {
         itemRepository = new InMemoryItemRepository();
         userRepository = new InMemoryUserRepository();
 
-        userRepository.create(firstUser);
-        userRepository.create(secondUser);
+        userRepository.save(firstUser);
+        userRepository.save(secondUser);
     }
 
     @Test
     void shouldCreateItems() {
         firstItem.setOwner(firstUser);
 
-        itemRepository.create(firstItem);
+        itemRepository.save(firstItem);
         /*
         проверка что установился id
          */
@@ -50,39 +50,39 @@ public class InMemoryItemRepositoryTest {
         firstItem.setOwner(firstUser);
         secondItem.setOwner(firstUser);
 
-        itemRepository.create(firstItem);
-        itemRepository.create(secondItem);
+        itemRepository.save(firstItem);
+        itemRepository.save(secondItem);
 
         long userId = firstUser.getId();
 
-        assertTrue(itemRepository.getUserItemsByUserId(userId).contains(firstItem));
-        assertTrue(itemRepository.getUserItemsByUserId(userId).contains(secondItem));
-        assertTrue(itemRepository.getUserItemsByUserId(userId).size() == 2);
+        assertTrue(itemRepository.findByOwner_Id(userId).contains(firstItem));
+        assertTrue(itemRepository.findByOwner_Id(userId).contains(secondItem));
+        assertTrue(itemRepository.findByOwner_Id(userId).size() == 2);
     }
 
     @Test
     void shouldFindItemByName() {
         firstItem.setOwner(firstUser);
         secondItem.setOwner(secondUser);
-        itemRepository.create(firstItem);
-        itemRepository.create(secondItem);
+        itemRepository.save(firstItem);
+        itemRepository.save(secondItem);
         /*
         первое слово описания
          */
         String targetDescription = secondItem.getDescription().split(" ")[0];
 
-        assertEquals(List.of(secondItem), itemRepository.findItemsBy(targetDescription));
+        assertEquals(List.of(secondItem), itemRepository.findByAvailableTrueAndDescriptionContainingIgnoreCase(targetDescription));
     }
 
     @Test
     void shouldFindItemByDescription() {
         firstItem.setOwner(firstUser);
         secondItem.setOwner(secondUser);
-        itemRepository.create(firstItem);
-        itemRepository.create(secondItem);
+        itemRepository.save(firstItem);
+        itemRepository.save(secondItem);
 
         String targetDescription = secondItem.getDescription();
-        assertEquals(List.of(secondItem), itemRepository.findItemsBy(targetDescription));
+        assertEquals(List.of(secondItem), itemRepository.findByAvailableTrueAndDescriptionContainingIgnoreCase(targetDescription));
     }
 
     private User initFirstUser() {

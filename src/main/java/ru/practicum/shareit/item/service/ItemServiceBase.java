@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.model.ItemNotAvailableException;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.exception.model.UserIsNotItemOwnerException;
 import ru.practicum.shareit.item.model.Item;
@@ -13,6 +14,7 @@ import ru.practicum.shareit.user.model.UserDto;
 import ru.practicum.shareit.user.service.UserDtoMapper;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,11 +41,11 @@ public class ItemServiceBase implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto itemDto, long ownerId) {
-        UserDto ownerDto = userService.getUserById(ownerId);
+        UserDto ownerDto = userService.getUserDtoById(ownerId);
         User owner = userMapper.fromDto(ownerDto);
         Item item = itemMapper.fromDto(itemDto, owner);
 
-        itemRepository.create(item);
+        itemRepository.save(item);
         log.info("Создана вещь: {}", item);
         return itemMapper.toDto(item);
     }
@@ -51,7 +53,7 @@ public class ItemServiceBase implements ItemService {
 
     @Override
     public ItemDto getItemDtoById(long id, long userIdRequestFrom) {
-        Item item = itemRepository.get(id)
+        Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден item с id = " + id));
 
         log.info("Возвращен item: {}", item);
@@ -60,7 +62,7 @@ public class ItemServiceBase implements ItemService {
 
     @Override
     public List<ItemDto> getAll() {
-        List<ItemDto> items = itemRepository.getAll().stream()
+        List<ItemDto> items = itemRepository.findAll().stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
         return null;
@@ -74,32 +76,30 @@ public class ItemServiceBase implements ItemService {
 
         checkIsUserItemOwner(itemBeforeUpdate, userIdRequestFrom);
         itemMapper.fromDto(updatedItem, itemBeforeUpdate);
-        itemRepository.update(itemBeforeUpdate);
+        itemRepository.save(itemBeforeUpdate);
         return getItemDtoById(itemId, userIdRequestFrom);
     }
 
     @Override
     public List<ItemDto> getItemsByOwnerId(long userId) {
-        return itemRepository.getUserItemsByUserId(userId).stream()
+        return itemRepository.findByOwner_Id(userId).stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<ItemDto> findItemsBy(String text) {
-        return itemRepository.findItemsBy(text).stream()
+        //наверное, по хорошему нужно делать валидацию на someText, но тесты требуют именно пустой лист
+        if (text.isBlank()) return Collections.emptyList();
+        return itemRepository.findByAvailableTrueAndDescriptionContainingIgnoreCase(text).stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Служебный метод, предназначен для получения вещи из репозитория в форме модели
-     *
-     * @param itemId id вещи
-     * @return объект вещи
-     */
-    private Item getItemById(long itemId) {
-        return itemRepository.get(itemId)
+
+    @Override
+    public Item getItemById(long itemId) {
+        return itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Не найден item с id = " + itemId));
     }
 
@@ -109,11 +109,20 @@ public class ItemServiceBase implements ItemService {
      * @param item   объект вещи
      * @param userId преподалагемый владелец вещи (id)
      */
-    private void checkIsUserItemOwner(Item item, long userId) {
+    @Override
+    public void checkIsUserItemOwner(Item item, long userId) {
         long ownerId = item.getOwner().getId();
 
         if (ownerId != userId)
             throw new UserIsNotItemOwnerException(String.format("Пользователь с id = %s не является " +
                     "владельцем вещи %s. Ее владелец пользователь id = %s", userId, item, ownerId));
     }
+
+    @Override
+    public void checkItemIsAvailable(Item item) {
+        if (!item.getAvailable()) {
+            throw new ItemNotAvailableException("Item id = " + item.getId() + "недоступно для бронирования");
+        }
+    }
+
 }
