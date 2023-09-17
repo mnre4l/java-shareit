@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.repository;
 
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -49,12 +51,12 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
-
+        throw new NotYetImplementedException();
     }
 
     @Override
     public void deleteAll(Iterable<? extends User> entities) {
-
+        throw new NotYetImplementedException();
     }
 
     @Override
@@ -64,122 +66,122 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public boolean existsById(Long aLong) {
-        return false;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public List<User> findAll() {
-        return List.copyOf(users.values());
+        return new ArrayList<>(users.values());
     }
 
     @Override
     public List<User> findAll(Sort sort) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public Page<User> findAll(Pageable pageable) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public List<User> findAllById(Iterable<Long> longs) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public long count() {
-        return 0;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public void deleteById(Long aLong) {
-
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User> List<S> saveAll(Iterable<S> entities) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public void flush() {
-
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User> S saveAndFlush(S entity) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User> List<S> saveAllAndFlush(Iterable<S> entities) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public void deleteAllInBatch(Iterable<User> entities) {
-
+        throw new NotYetImplementedException();
     }
 
     @Override
     public void deleteAllByIdInBatch(Iterable<Long> longs) {
-
+        throw new NotYetImplementedException();
     }
 
     @Override
     public void deleteAllInBatch() {
-
+        throw new NotYetImplementedException();
     }
 
     @Override
     public User getOne(Long aLong) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public User getById(Long aLong) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public User getReferenceById(Long aLong) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User> Optional<S> findOne(Example<S> example) {
-        return Optional.empty();
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User> List<S> findAll(Example<S> example) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User> List<S> findAll(Example<S> example, Sort sort) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User> Page<S> findAll(Example<S> example, Pageable pageable) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User> long count(Example<S> example) {
-        return 0;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User> boolean exists(Example<S> example) {
-        return false;
+        throw new NotYetImplementedException();
     }
 
     @Override
     public <S extends User, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override
