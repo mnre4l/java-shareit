@@ -15,7 +15,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * @param userId id пользователя, вещи которого будут получены.
      * @return список вещей, добавленных пользователем.
      */
-    List<Item> findByOwner_Id(long userId);
+    List<Item> findByOwner_IdOrderByIdAsc(long userId);
 
     /**
      * Поиск всех вещей, в описании или в названии которых содержится текст.
@@ -23,6 +23,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * @param someText текст, по которому будет поиск.
      * @return список подходящих вещей.
      */
-
     List<Item> findByAvailableTrueAndDescriptionContainingIgnoreCase(String someText);
 }

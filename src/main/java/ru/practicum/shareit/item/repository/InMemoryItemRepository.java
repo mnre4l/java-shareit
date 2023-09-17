@@ -29,7 +29,7 @@ public class InMemoryItemRepository implements ItemRepository {
     long id;
 
     @Override
-    public List<Item> findByOwner_Id(long userId) {
+    public List<Item> findByOwner_IdOrderByIdAsc(long userId) {
         return usersItems.get(userId);
     }
 

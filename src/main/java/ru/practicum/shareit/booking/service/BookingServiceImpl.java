@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.*;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.model.*;
@@ -25,6 +26,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
 
     @Override
+    @Transactional
     public BookingDtoAfterCreate createBooking(BookingDtoOnCreate bookingDto, Long bookerId) {
         User booker = userService.getUserById(bookerId);
         Booking booking = mapper.fromDtoOnCreate(bookingDto);
@@ -82,9 +84,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDtoAfterCreate> getUserBookings(Long userId, UserBookingStates state) {
         User booker = userService.getUserById(userId);
-        /**
-         * передалть в протекц интерфейс маппинг
-         */
+
         switch (state) {
             case ALL: {
                 List<Booking> bookingList = bookingRepository
@@ -120,9 +120,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDtoAfterCreate> getBookingsByOwner(Long ownerId, UserBookingStates state) {
         User owner = userService.getUserById(ownerId);
-        /**
-         * передалть в протекц интерфейс маппинг
-         */
+
         switch (state) {
             case ALL: {
                 List<Booking> bookingList = bookingRepository
@@ -154,7 +152,6 @@ public class BookingServiceImpl implements BookingService {
             }
         }
     }
-
 
     private void checkBookingAccessFor(Long userRequestFromId, Booking booking) {
         Long bookerId = booking.getBooker().getId();

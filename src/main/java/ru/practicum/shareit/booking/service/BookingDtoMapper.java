@@ -8,6 +8,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingDtoAfterApproving;
 import ru.practicum.shareit.booking.model.BookingDtoAfterCreate;
 import ru.practicum.shareit.booking.model.BookingDtoOnCreate;
+import ru.practicum.shareit.item.model.ItemInfoDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,5 +45,11 @@ public class BookingDtoMapper {
         return bookingList.stream()
                 .map(this::toDtoAfterCreate)
                 .collect(Collectors.toList());
+    }
+
+    public ItemInfoDto.BookingDto toDtoForItemInfo(Booking booking) {
+        log.info("Маппинг Booking -> toDtoForItemInfo: {}", booking);
+        if (booking == null) return null;
+        return mapper.map(booking, ItemInfoDto.BookingDto.class);
     }
 }

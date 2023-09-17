@@ -55,9 +55,9 @@ public class InMemoryItemRepositoryTest {
 
         long userId = firstUser.getId();
 
-        assertTrue(itemRepository.findByOwner_Id(userId).contains(firstItem));
-        assertTrue(itemRepository.findByOwner_Id(userId).contains(secondItem));
-        assertTrue(itemRepository.findByOwner_Id(userId).size() == 2);
+        assertTrue(itemRepository.findByOwner_IdOrderByIdAsc(userId).contains(firstItem));
+        assertTrue(itemRepository.findByOwner_IdOrderByIdAsc(userId).contains(secondItem));
+        assertTrue(itemRepository.findByOwner_IdOrderByIdAsc(userId).size() == 2);
     }
 
     @Test

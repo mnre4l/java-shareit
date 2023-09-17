@@ -17,4 +17,5 @@ public interface BookingService {
     List<BookingDtoAfterCreate> getUserBookings(Long userId, UserBookingStates state);
 
     List<BookingDtoAfterCreate> getBookingsByOwner(Long ownerId, UserBookingStates state);
+
 }

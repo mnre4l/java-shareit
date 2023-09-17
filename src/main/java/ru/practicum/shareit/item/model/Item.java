@@ -1,16 +1,20 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Класс предназначен для описания модели арендуемой вещи.
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "items", schema = "public")
+@NamedEntityGraph(name = "item-comments-graph", attributeNodes = {@NamedAttributeNode("comments")})
 public class Item {
     /**
      * Наименование вещи.
@@ -38,4 +42,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "item_id")
+    private List<Comment> comments;
 }
