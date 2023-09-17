@@ -50,8 +50,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoAfterApproving confirmBooking(Long bookingId, Long ownerId, Boolean isApproved) {
-        Booking booking = bookingRepository.findById(bookingId).
-                orElseThrow(() -> new NotFoundException("Не найдена бронь с id = " + bookingId));
+        Booking booking = bookingRepository.findById(bookingId)
+                        .orElseThrow(() -> new NotFoundException("Не найдена бронь с id = " + bookingId));
 
         if (!booking.getStatus().equals(Status.WAITING)) {
             throw new StatusCanNotBeChangedException("Бронь id = " + booking.getId() + "уже была рассмотрена владельцем");
@@ -155,9 +155,9 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkBookingAccessFor(Long userRequestFromId, Booking booking) {
         Long bookerId = booking.getBooker().getId();
-        Long itemOwnerId = booking.getItem().
-                getOwner().
-                getId();
+        Long itemOwnerId = booking.getItem()
+                .getOwner()
+                .getId();
         if (!(userRequestFromId.equals(bookerId) || userRequestFromId.equals(itemOwnerId))) {
             throw new AccessDeniedException("Доступ к брони id = " + booking.getId() + " запрещен для " +
                     "пользователя id = " + userRequestFromId);
