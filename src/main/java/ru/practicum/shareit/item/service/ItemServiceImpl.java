@@ -201,18 +201,23 @@ public class ItemServiceImpl implements ItemService {
 
         for (Long itemId : itemsIdsAndTheirBookings.keySet()) {
             log.info("Ищем следующую и прошлую брони для Item id = {}", itemId);
+
             Booking nextBooking = getNextTimeBookingFrom(moment, itemsIdsAndTheirBookings.get(itemId));
             Booking lastBooking = getLastTimeBookingFrom(moment, itemsIdsAndTheirBookings.get(itemId));
-            log.info("Следующая бронь: {}, прошлая бронь: {}", nextBooking, lastBooking);
-            ItemInfoDto itemInfoDto = itemsIdsAndTheirDto.get(itemId);
 
+            log.info("Следующая бронь: {}, прошлая бронь: {}", nextBooking, lastBooking);
+
+            ItemInfoDto itemInfoDto = itemsIdsAndTheirDto.get(itemId);
             ItemInfoDto.BookingDto bookingDtoNext = bookingDtoMapper.toDtoForItemInfo(nextBooking);
+
             log.info("Next booking: {}", bookingDtoNext);
+
             ItemInfoDto.BookingDto bookingDtoLast = bookingDtoMapper.toDtoForItemInfo(lastBooking);
             log.info("Next booking: {}", bookingDtoLast);
 
             itemInfoDto.setNextBooking(bookingDtoNext);
             itemInfoDto.setLastBooking(bookingDtoLast);
+
             log.info("itemInfoDto после установки прошлой и следующей брони: {}", itemInfoDto);
         }
     }
@@ -220,6 +225,8 @@ public class ItemServiceImpl implements ItemService {
     private Booking getNextTimeBookingFrom(LocalDateTime moment, List<Booking> bookingList) {
         return bookingList.stream()
                 .filter(b -> b.getStart().isAfter(moment))
+                .filter(b -> (b.getStatus().equals(Status.APPROVED)) ||
+                        b.getStatus().equals(Status.WAITING))
                 .min(Comparator.comparing(Booking::getStart))
                 .orElse(null);
     }
@@ -227,6 +234,8 @@ public class ItemServiceImpl implements ItemService {
     private Booking getLastTimeBookingFrom(LocalDateTime moment, List<Booking> bookingList) {
         return bookingList.stream()
                 .filter(b -> (b.getStart().isBefore(moment)))
+                .filter(b -> (b.getStatus().equals(Status.APPROVED)) ||
+                        b.getStatus().equals(Status.WAITING))
                 .max(Comparator.comparing(Booking::getStart))
                 .orElse(null);
     }

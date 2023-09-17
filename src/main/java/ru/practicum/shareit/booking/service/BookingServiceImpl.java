@@ -103,7 +103,7 @@ public class BookingServiceImpl implements BookingService {
             }
             case CURRENT: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByBooker_IdAndStartAfterAndEndBeforeOrderByStartDesc(booker.getId(),
+                        .findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(booker.getId(),
                                 LocalDateTime.now(), LocalDateTime.now());
                 return mapper.toDtoAfterCreate(bookingList);
             }
@@ -139,7 +139,7 @@ public class BookingServiceImpl implements BookingService {
             }
             case CURRENT: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByItem_Owner_IdAndStartAfterAndEndBeforeOrderByStartDesc(owner.getId(),
+                        .findAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(owner.getId(),
                                 LocalDateTime.now(), LocalDateTime.now());
                 return mapper.toDtoAfterCreate(bookingList);
             }
