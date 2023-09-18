@@ -29,7 +29,7 @@ public class BookingController {
     /*
     чекстайл не пропускает нижние подчеркивания и статические поля, оставил так
      */
-    private final String XSHARER = "X-Sharer-User-Id";
+    private final String xSharerUserId = "X-Sharer-User-Id";
     /**
      * Сервис бронирования
      */
@@ -45,7 +45,7 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     @Validated
-    public BookingDtoAfterCreate createBooking(@RequestHeader(XSHARER) @NotNull final Long bookerId, @RequestBody @Valid final BookingDtoOnCreate bookingDtoOnCreate) {
+    public BookingDtoAfterCreate createBooking(@RequestHeader(xSharerUserId) @NotNull final Long bookerId, @RequestBody @Valid final BookingDtoOnCreate bookingDtoOnCreate) {
         log.info("POST /bookings получен для: {}, от пользователя id = {}", bookingDtoOnCreate, bookerId);
         return bookingService.createBooking(bookingDtoOnCreate, bookerId);
     }
@@ -59,7 +59,7 @@ public class BookingController {
      */
     @PatchMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingDtoAfterApproving confirmBooking(@PathVariable final Long bookingId, @RequestHeader(XSHARER) @NotNull final Long ownerId, @RequestParam @NotNull final Boolean approved) {
+    public BookingDtoAfterApproving confirmBooking(@PathVariable final Long bookingId, @RequestHeader(xSharerUserId) @NotNull final Long ownerId, @RequestParam @NotNull final Boolean approved) {
         log.info("PATCH /bookings/bookingId получен для: bookingId = {}, от пользователя id = {}", bookingId, ownerId);
         return bookingService.confirmBooking(bookingId, ownerId, approved);
     }
@@ -73,7 +73,7 @@ public class BookingController {
      */
     @GetMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingDtoAfterApproving getBooking(@RequestHeader(XSHARER) @NotNull final Long userRequestFromId, @PathVariable @NotNull final Long bookingId) {
+    public BookingDtoAfterApproving getBooking(@RequestHeader(xSharerUserId) @NotNull final Long userRequestFromId, @PathVariable @NotNull final Long bookingId) {
         log.info("GET /bookings/bookingId получен для: bookingId = {}, от пользователя id = {}", bookingId, userRequestFromId);
         return bookingService.getBookingById(bookingId, userRequestFromId);
     }
@@ -87,7 +87,7 @@ public class BookingController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingDtoAfterCreate> getUserBookings(@RequestHeader(XSHARER) @NotNull final Long userId, @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
+    public List<BookingDtoAfterCreate> getUserBookings(@RequestHeader(xSharerUserId) @NotNull final Long userId, @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
         UserBookingStates state = UserBookingStates.from(bookingsState).orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
         return bookingService.getUserBookings(userId, state);
     }
@@ -101,7 +101,7 @@ public class BookingController {
      */
     @GetMapping("/owner")
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingDtoAfterCreate> getBookingsByOwner(@RequestHeader(XSHARER) @NotNull final Long ownerId, @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
+    public List<BookingDtoAfterCreate> getBookingsByOwner(@RequestHeader(xSharerUserId) @NotNull final Long ownerId, @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
         UserBookingStates state = UserBookingStates.from(bookingsState).orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
         return bookingService.getBookingsByOwner(ownerId, state);
     }
