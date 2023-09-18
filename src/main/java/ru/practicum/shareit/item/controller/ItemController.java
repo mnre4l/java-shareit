@@ -25,6 +25,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 public class ItemController {
+    private final static String X_SHARER_USER_ID = "X-Sharer-User-Id";
     /**
      * Сервис вещей
      */
@@ -40,7 +41,7 @@ public class ItemController {
     @PostMapping
     @Validated({Marker.OnCreate.class})
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long ownerId,
+    public ItemDto addItem(@RequestHeader(X_SHARER_USER_ID) long ownerId,
                            @RequestBody @Valid ItemDto itemDto) {
         log.info("POST /items: получен для ownerId = {}, itemDto = {}", ownerId, itemDto);
         return itemService.createItem(itemDto, ownerId);
@@ -57,7 +58,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     @Validated(Marker.OnUpdate.class)
     @ResponseStatus(HttpStatus.OK)
-    public ItemInfoDto updateItem(@RequestHeader("X-Sharer-User-Id") long userIdRequestFrom,
+    public ItemInfoDto updateItem(@RequestHeader(X_SHARER_USER_ID) long userIdRequestFrom,
                                   @PathVariable("itemId") @NotNull Long itemId,
                                   @RequestBody @Valid ItemDto itemDto) {
         log.info("PATCH /items/itemId: получен для userId = {}, item = {}", userIdRequestFrom, itemDto);
@@ -73,7 +74,7 @@ public class ItemController {
      */
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemInfoDto getItem(@RequestHeader("X-Sharer-User-Id") long userIdRequestFrom,
+    public ItemInfoDto getItem(@RequestHeader(X_SHARER_USER_ID) long userIdRequestFrom,
                                @PathVariable("itemId") @NotNull Long itemId) {
         log.info("GET /items/itemId: получен для userId = {}, itemId = {}", userIdRequestFrom, itemId);
         return itemService.getItemDtoById(itemId, userIdRequestFrom);
@@ -87,7 +88,7 @@ public class ItemController {
      */
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemInfoDto> getUserItems(@RequestHeader("X-Sharer-User-Id") long userIdRequestFrom) {
+    public List<ItemInfoDto> getUserItems(@RequestHeader(X_SHARER_USER_ID) long userIdRequestFrom) {
         log.info("GET /items получен для userId = " + userIdRequestFrom);
         return itemService.getItemsByOwnerId(userIdRequestFrom);
     }
@@ -106,7 +107,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userIdRequestFrom,
+    public CommentDto addComment(@RequestHeader(X_SHARER_USER_ID) long userIdRequestFrom,
                                  @PathVariable("itemId") @NotNull Long itemId,
                                  @Valid @RequestBody CommentDto commentDto) {
         log.info("POST /items/itemId/comment получен для itemId = {}", itemId);

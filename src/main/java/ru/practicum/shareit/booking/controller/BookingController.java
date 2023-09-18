@@ -26,6 +26,7 @@ import java.util.List;
 @Validated
 @RequestMapping(path = "/bookings")
 public class BookingController {
+    private final String X_SHARER_USER_ID = "X-Sharer-User-Id";
     /**
      * Сервис бронирования
      */
@@ -41,8 +42,7 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     @Validated
-    public BookingDtoAfterCreate createBooking(@RequestHeader("X-Sharer-User-Id") @NotNull final Long bookerId,
-                                               @RequestBody @Valid final BookingDtoOnCreate bookingDtoOnCreate) {
+    public BookingDtoAfterCreate createBooking(@RequestHeader(X_SHARER_USER_ID) @NotNull final Long bookerId, @RequestBody @Valid final BookingDtoOnCreate bookingDtoOnCreate) {
         log.info("POST /bookings получен для: {}, от пользователя id = {}", bookingDtoOnCreate, bookerId);
         return bookingService.createBooking(bookingDtoOnCreate, bookerId);
     }
@@ -56,9 +56,7 @@ public class BookingController {
      */
     @PatchMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingDtoAfterApproving confirmBooking(@PathVariable final Long bookingId,
-                                                   @RequestHeader("X-Sharer-User-Id") @NotNull final Long ownerId,
-                                                   @RequestParam @NotNull final Boolean approved) {
+    public BookingDtoAfterApproving confirmBooking(@PathVariable final Long bookingId, @RequestHeader(X_SHARER_USER_ID) @NotNull final Long ownerId, @RequestParam @NotNull final Boolean approved) {
         log.info("PATCH /bookings/bookingId получен для: bookingId = {}, от пользователя id = {}", bookingId, ownerId);
         return bookingService.confirmBooking(bookingId, ownerId, approved);
     }
@@ -72,8 +70,7 @@ public class BookingController {
      */
     @GetMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingDtoAfterApproving getBooking(@RequestHeader("X-Sharer-User-Id") @NotNull final Long userRequestFromId,
-                                               @PathVariable @NotNull final Long bookingId) {
+    public BookingDtoAfterApproving getBooking(@RequestHeader(X_SHARER_USER_ID) @NotNull final Long userRequestFromId, @PathVariable @NotNull final Long bookingId) {
         log.info("GET /bookings/bookingId получен для: bookingId = {}, от пользователя id = {}", bookingId, userRequestFromId);
         return bookingService.getBookingById(bookingId, userRequestFromId);
     }
@@ -87,10 +84,8 @@ public class BookingController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingDtoAfterCreate> getUserBookings(@RequestHeader("X-Sharer-User-Id") @NotNull final Long userId,
-                                                       @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
-        UserBookingStates state = UserBookingStates.from(bookingsState)
-                .orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
+    public List<BookingDtoAfterCreate> getUserBookings(@RequestHeader(X_SHARER_USER_ID) @NotNull final Long userId, @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
+        UserBookingStates state = UserBookingStates.from(bookingsState).orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
         return bookingService.getUserBookings(userId, state);
     }
 
@@ -103,10 +98,8 @@ public class BookingController {
      */
     @GetMapping("/owner")
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingDtoAfterCreate> getBookingsByOwner(@RequestHeader("X-Sharer-User-Id") @NotNull final Long ownerId,
-                                                          @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
-        UserBookingStates state = UserBookingStates.from(bookingsState)
-                .orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
+    public List<BookingDtoAfterCreate> getBookingsByOwner(@RequestHeader(X_SHARER_USER_ID) @NotNull final Long ownerId, @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
+        UserBookingStates state = UserBookingStates.from(bookingsState).orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
         return bookingService.getBookingsByOwner(ownerId, state);
     }
 }
