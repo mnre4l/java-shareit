@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceBase implements UserService {
+public class UserServiceImpl implements UserService {
     /**
      * Репозиторий пользователей
      */

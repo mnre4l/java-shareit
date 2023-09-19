@@ -66,7 +66,5 @@ public interface ItemService {
 
     void checkIsUserItemOwner(Item item, long userId);
 
-    void checkItemIsAvailable(Item item);
-
     CommentDto addComment(long userIdRequestFrom, Long itemId, CommentDto commentDto);
 }

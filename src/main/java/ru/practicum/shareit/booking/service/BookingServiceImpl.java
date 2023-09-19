@@ -8,10 +8,10 @@ import ru.practicum.shareit.booking.model.*;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.model.*;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserBookingStates;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,20 +20,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class BookingServiceImpl implements BookingService {
-    private final UserService userService;
-    private final ItemService itemService;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
     private final BookingDtoMapper mapper;
     private final BookingRepository bookingRepository;
 
     @Override
     @Transactional
     public BookingDtoAfterCreate createBooking(BookingDtoOnCreate bookingDto, Long bookerId) {
-        User booker = userService.getUserById(bookerId);
+        User booker = userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id = " + bookerId));
         Booking booking = mapper.fromDtoOnCreate(bookingDto);
         long itemId = booking.getItem().getId();
-        Item item = itemService.getItemById(itemId);
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Не найден Item с id = " + bookerId));
 
-        itemService.checkItemIsAvailable(item);
+        checkItemIsAvailable(item);
         checkItemCanBeBookedForTime(item, booking.getStart(), booking.getEnd());
         checkItemCanBeBookedByUser(item, booker);
 
@@ -49,19 +51,26 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDtoAfterApproving confirmBooking(Long bookingId, Long ownerId, Boolean isApproved) {
+    public BookingDtoAfterApproving confirmBooking(Long bookingId, Long shouldBeOwnerId, Boolean isApproved) {
         Booking booking = bookingRepository.findById(bookingId)
-                        .orElseThrow(() -> new NotFoundException("Не найдена бронь с id = " + bookingId));
+                .orElseThrow(() -> new NotFoundException("Не найдена бронь с id = " + bookingId));
+        /*
+        проверка что пользователь существует
+         */
+        User owner = userRepository.findById(shouldBeOwnerId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id = " + shouldBeOwnerId));
 
         if (!booking.getStatus().equals(Status.WAITING)) {
             throw new StatusCanNotBeChangedException("Бронь id = " + booking.getId() + "уже была рассмотрена владельцем");
         }
-        /*
-        проверка что пользователь существует
-         */
-        User owner = userService.getUserById(ownerId);
 
-        itemService.checkIsUserItemOwner(booking.getItem(), owner.getId());
+        Long ownerId = booking.getItem()
+                .getOwner()
+                .getId();
+
+        if (!shouldBeOwnerId.equals(ownerId))
+            throw new UserIsNotItemOwnerException(String.format("Пользователь с id = %s не является " +
+                    "владельцем вещи %s. Ее владелец пользователь id = %s", shouldBeOwnerId, booking.getItem(), ownerId));
         if (isApproved) {
             booking.setStatus(Status.APPROVED);
         } else {
@@ -77,13 +86,15 @@ public class BookingServiceImpl implements BookingService {
     public BookingDtoAfterApproving getBookingById(Long bookingId, Long userRequestFrom) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Не найдена бронь с id = " + bookingId));
+
         checkBookingAccessFor(userRequestFrom, booking);
         return mapper.toDtoAfterApproving(booking);
     }
 
     @Override
     public List<BookingDtoAfterCreate> getUserBookings(Long userId, UserBookingStates state) {
-        User booker = userService.getUserById(userId);
+        User booker = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь id = " + userId));
 
         switch (state) {
             case ALL: {
@@ -119,7 +130,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDtoAfterCreate> getBookingsByOwner(Long ownerId, UserBookingStates state) {
-        User owner = userService.getUserById(ownerId);
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь id = " + ownerId));
 
         switch (state) {
             case ALL: {
@@ -187,6 +199,12 @@ public class BookingServiceImpl implements BookingService {
 
         if (ownerId.equals(bookerId)) {
             throw new UserTryBookingItsItemException("Пользователь не может бронировать свою вещь");
+        }
+    }
+
+    private void checkItemIsAvailable(Item item) {
+        if (!item.getAvailable()) {
+            throw new ItemNotAvailableException("Item id = " + item.getId() + "недоступно для бронирования");
         }
     }
 

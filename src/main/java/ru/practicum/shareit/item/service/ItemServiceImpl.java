@@ -7,7 +7,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingDtoMapper;
-import ru.practicum.shareit.exception.model.ItemNotAvailableException;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.exception.model.UserDidNotBookingItemException;
 import ru.practicum.shareit.exception.model.UserIsNotItemOwnerException;
@@ -15,9 +14,7 @@ import ru.practicum.shareit.item.model.*;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.model.UserDto;
-import ru.practicum.shareit.user.service.UserDtoMapper;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -30,7 +27,7 @@ public class ItemServiceImpl implements ItemService {
     /**
      * Сервис пользоввателей
      */
-    private final UserService userService;
+    private final UserRepository userRepository;
     /**
      * Репозиторий вещей
      */
@@ -42,7 +39,6 @@ public class ItemServiceImpl implements ItemService {
     /**
      * Маппер пользователей
      */
-    private final UserDtoMapper userMapper;
     private final BookingRepository bookingRepository;
     private final BookingDtoMapper bookingDtoMapper;
     private final CommentRepository commentRepository;
@@ -50,8 +46,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto itemDto, long ownerId) {
-        UserDto ownerDto = userService.getUserDtoById(ownerId);
-        User owner = userMapper.fromDto(ownerDto);
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь id = " + ownerId));
         Item item = itemMapper.fromDto(itemDto, owner);
 
         itemRepository.save(item);
@@ -138,17 +134,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void checkItemIsAvailable(Item item) {
-        if (!item.getAvailable()) {
-            throw new ItemNotAvailableException("Item id = " + item.getId() + "недоступно для бронирования");
-        }
-    }
-
-    @Override
     public CommentDto addComment(long userIdRequestFrom, Long itemId, CommentDto commentDto) {
         LocalDateTime now = LocalDateTime.now();
 
-        User user = userService.getUserById(userIdRequestFrom);
+        User user = userRepository.findById(userIdRequestFrom)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id = " + userIdRequestFrom));
         Item item = getItemById(itemId);
         List<Booking> userBookings = bookingRepository
                 .findAllByBooker_IdAndItem_IdAndStartBefore(userIdRequestFrom, itemId, now);
