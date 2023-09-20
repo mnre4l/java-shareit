@@ -1,16 +1,22 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemDto;
+import ru.practicum.shareit.item.model.ItemInfoDto;
 import ru.practicum.shareit.user.model.User;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Класс предназначен для маппинга моделей вещей
  */
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class ItemDtoMapper {
     /**
@@ -60,5 +66,19 @@ public class ItemDtoMapper {
 
         item.setOwner(owner);
         return item;
+    }
+
+    public List<ItemInfoDto> toItemInfoDto(List<Item> items) {
+        log.info("Список Item для маппинга в toItemInfoDto: {}", items);
+        List<ItemInfoDto> mappedItems = items.stream()
+                .map(item -> mapper.map(item, ItemInfoDto.class))
+                .collect(Collectors.toList());
+        log.info("Результат маппинга: {}", mappedItems);
+        return mappedItems;
+    }
+
+    public ItemInfoDto toItemInfoDto(Item item) {
+        log.info("Item для маппинга в toItemInfoDto: {}", item);
+        return mapper.map(item, ItemInfoDto.class);
     }
 }

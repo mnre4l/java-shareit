@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item.service;
 
+import ru.practicum.shareit.item.model.CommentDto;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemDto;
+import ru.practicum.shareit.item.model.ItemInfoDto;
 
 import java.util.List;
 
@@ -24,7 +27,7 @@ public interface ItemService {
      * @param userIdRequestFrom id пользователя, который выполняет запрос
      * @return вещь по ее id
      */
-    ItemDto getItemDtoById(long itemId, long userIdRequestFrom);
+    ItemInfoDto getItemDtoById(long itemId, Long userIdRequestFrom);
 
     /**
      * Получение списка всех вещей
@@ -41,7 +44,7 @@ public interface ItemService {
      * @param itemDto           DTO обновленной вещи
      * @return обновленный DTO вещи
      */
-    ItemDto updateItem(long itemId, long userIdRequestFrom, ItemDto itemDto);
+    ItemInfoDto updateItem(long itemId, long userIdRequestFrom, ItemDto itemDto);
 
     /**
      * Получение списка всех вещей пользователя по его id
@@ -49,7 +52,7 @@ public interface ItemService {
      * @param ownerId пользователь, чьи вещи запрашиваются
      * @return список вещей этого пользователя
      */
-    List<ItemDto> getItemsByOwnerId(long ownerId);
+    List<ItemInfoDto> getItemsByOwnerId(long ownerId);
 
     /**
      * Поиск вещей по описанию
@@ -58,4 +61,10 @@ public interface ItemService {
      * @return списо подходящих вещей
      */
     List<ItemDto> findItemsBy(String text);
+
+    Item getItemById(long itemId);
+
+    void checkIsUserItemOwner(Item item, long userId);
+
+    CommentDto addComment(long userIdRequestFrom, Long itemId, CommentDto commentDto);
 }

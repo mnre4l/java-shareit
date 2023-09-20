@@ -1,15 +1,14 @@
 package ru.practicum.shareit.exception.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.model.EmailIsAlreadyUsedException;
-import ru.practicum.shareit.exception.model.ErrorResponse;
-import ru.practicum.shareit.exception.model.NotFoundException;
-import ru.practicum.shareit.exception.model.UserIsNotItemOwnerException;
+import ru.practicum.shareit.exception.model.*;
 
 /**
  * Класс предназначен для обработки исключений.
@@ -67,6 +66,49 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleItemNotAvailableException(final ItemNotAvailableException e) {
+        log.info("Error: " + e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDataIntegrityViolationException(final DataIntegrityViolationException e) {
+        log.info("Error: " + e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUserTryBookingItsItemException(final UserTryBookingItsItemException e) {
+        log.info("Error: " + e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+        log.info("Error: " + e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleAccessDeniedException(final AccessDeniedException e) {
+        log.info("Error: " + e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleBadBookingStatusException(final BadBookingStatusException e) {
+        log.info("Error: " + e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
     /**
      * Обработка прочих непроверямых исключений.
      *
@@ -77,6 +119,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleException(final RuntimeException e) {
         log.warn("Error: " + e.getMessage());
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse(e.getMessage(), e.getStackTrace());
     }
 }

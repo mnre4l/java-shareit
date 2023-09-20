@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.model.CommentDto;
 import ru.practicum.shareit.item.model.ItemDto;
+import ru.practicum.shareit.item.model.ItemInfoDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.utilities.models.Marker;
 
@@ -23,6 +25,10 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 public class ItemController {
+    /*
+    чекстайл не пропускает название с нижними подчеркиваниями и статические поля, оставил так
+     */
+    private final String xSharerUserId = "X-Sharer-User-Id";
     /**
      * Сервис вещей
      */
@@ -38,7 +44,7 @@ public class ItemController {
     @PostMapping
     @Validated({Marker.OnCreate.class})
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long ownerId,
+    public ItemDto addItem(@RequestHeader(xSharerUserId) long ownerId,
                            @RequestBody @Valid ItemDto itemDto) {
         log.info("POST /items: получен для ownerId = {}, itemDto = {}", ownerId, itemDto);
         return itemService.createItem(itemDto, ownerId);
@@ -55,9 +61,9 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     @Validated(Marker.OnUpdate.class)
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userIdRequestFrom,
-                              @PathVariable("itemId") @NotNull Long itemId,
-                              @RequestBody @Valid ItemDto itemDto) {
+    public ItemInfoDto updateItem(@RequestHeader(xSharerUserId) long userIdRequestFrom,
+                                  @PathVariable("itemId") @NotNull Long itemId,
+                                  @RequestBody @Valid ItemDto itemDto) {
         log.info("PATCH /items/itemId: получен для userId = {}, item = {}", userIdRequestFrom, itemDto);
         return itemService.updateItem(itemId, userIdRequestFrom, itemDto);
     }
@@ -71,8 +77,8 @@ public class ItemController {
      */
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto getItem(@RequestHeader("X-Sharer-User-Id") long userIdRequestFrom,
-                           @PathVariable("itemId") @NotNull Long itemId) {
+    public ItemInfoDto getItem(@RequestHeader(xSharerUserId) long userIdRequestFrom,
+                               @PathVariable("itemId") @NotNull Long itemId) {
         log.info("GET /items/itemId: получен для userId = {}, itemId = {}", userIdRequestFrom, itemId);
         return itemService.getItemDtoById(itemId, userIdRequestFrom);
     }
@@ -85,7 +91,7 @@ public class ItemController {
      */
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> getUserItems(@RequestHeader("X-Sharer-User-Id") long userIdRequestFrom) {
+    public List<ItemInfoDto> getUserItems(@RequestHeader(xSharerUserId) long userIdRequestFrom) {
         log.info("GET /items получен для userId = " + userIdRequestFrom);
         return itemService.getItemsByOwnerId(userIdRequestFrom);
     }
@@ -101,6 +107,15 @@ public class ItemController {
     public List<ItemDto> findItemsByText(@RequestParam("text") String text) {
         log.info("GET /items/search получен для text = " + text);
         return itemService.findItemsBy(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader(xSharerUserId) long userIdRequestFrom,
+                                 @PathVariable("itemId") @NotNull Long itemId,
+                                 @Valid @RequestBody CommentDto commentDto) {
+        log.info("POST /items/itemId/comment получен для itemId = {}", itemId);
+        log.info("text: {}", commentDto.getText());
+        return itemService.addComment(userIdRequestFrom, itemId, commentDto);
     }
 
 }
