@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemDto;
 import ru.practicum.shareit.item.model.ItemInfoDto;
+import ru.practicum.shareit.request.model.ItemRequestDtoInfo;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -80,5 +81,10 @@ public class ItemDtoMapper {
     public ItemInfoDto toItemInfoDto(Item item) {
         log.info("Item для маппинга в toItemInfoDto: {}", item);
         return mapper.map(item, ItemInfoDto.class);
+    }
+
+    public ItemRequestDtoInfo.ItemForRequestDto toItemForRequestDto(Item item) {
+        log.info("Item для маппинга в ItemRequestDtoInfo.ItemForRequestDto: {}", item);
+        return mapper.map(item, ItemRequestDtoInfo.ItemForRequestDto.class);
     }
 }

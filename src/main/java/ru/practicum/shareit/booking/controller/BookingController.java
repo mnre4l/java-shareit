@@ -73,7 +73,8 @@ public class BookingController {
      */
     @GetMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingDtoAfterApproving getBooking(@RequestHeader(xSharerUserId) @NotNull final Long userRequestFromId, @PathVariable @NotNull final Long bookingId) {
+    public BookingDtoAfterApproving getBooking(@RequestHeader(xSharerUserId) @NotNull final Long userRequestFromId,
+                                               @PathVariable @NotNull final Long bookingId) {
         log.info("GET /bookings/bookingId получен для: bookingId = {}, от пользователя id = {}", bookingId, userRequestFromId);
         return bookingService.getBookingById(bookingId, userRequestFromId);
     }
@@ -87,9 +88,13 @@ public class BookingController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingDtoAfterCreate> getUserBookings(@RequestHeader(xSharerUserId) @NotNull final Long userId, @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
-        UserBookingStates state = UserBookingStates.from(bookingsState).orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
-        return bookingService.getUserBookings(userId, state);
+    public List<BookingDtoAfterCreate> getUserBookings(@RequestHeader(xSharerUserId) @NotNull final Long userId,
+                                                       @RequestParam(value = "state", defaultValue = "ALL") String bookingsState,
+                                                       @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                       @RequestParam(value = "size", defaultValue = "20") Integer size) {
+        UserBookingStates state = UserBookingStates.from(bookingsState)
+                .orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
+        return bookingService.getUserBookings(userId, state, from, size);
     }
 
     /**
@@ -101,8 +106,12 @@ public class BookingController {
      */
     @GetMapping("/owner")
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingDtoAfterCreate> getBookingsByOwner(@RequestHeader(xSharerUserId) @NotNull final Long ownerId, @RequestParam(value = "state", defaultValue = "ALL") String bookingsState) {
-        UserBookingStates state = UserBookingStates.from(bookingsState).orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
-        return bookingService.getBookingsByOwner(ownerId, state);
+    public List<BookingDtoAfterCreate> getBookingsByOwner(@RequestHeader(xSharerUserId) @NotNull final Long ownerId,
+                                                          @RequestParam(value = "state", defaultValue = "ALL") String bookingsState,
+                                                          @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                          @RequestParam(value = "size", defaultValue = "20") Integer size) {
+        UserBookingStates state = UserBookingStates.from(bookingsState)
+                .orElseThrow(() -> new BadBookingStatusException("Unknown state: " + bookingsState));
+        return bookingService.getBookingsByOwner(ownerId, state, from, size);
     }
 }

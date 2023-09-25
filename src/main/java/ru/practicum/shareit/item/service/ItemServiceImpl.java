@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -15,6 +16,7 @@ import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.utilities.models.Page;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -58,6 +60,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemInfoDto getItemDtoById(long id, Long userIdRequestFrom) {
+        User user = userRepository.findById(userIdRequestFrom)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь id = " + userIdRequestFrom));
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден item с id = " + id));
         ItemInfoDto itemInfoDto = itemMapper.toItemInfoDto(item);
@@ -75,7 +79,7 @@ public class ItemServiceImpl implements ItemService {
         List<ItemDto> items = itemRepository.findAll().stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
-        return null;
+        return items;
     }
 
     @Override
@@ -103,10 +107,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> findItemsBy(String text) {
+    public List<ItemDto> findItemsBy(String text, Integer from, Integer size) {
+        Page page = new Page(from, size, Sort.unsorted());
         //наверное, по хорошему нужно делать валидацию на someText, но тесты требуют именно пустой лист
         if (text.isBlank()) return Collections.emptyList();
-        return itemRepository.findByAvailableTrueAndDescriptionContainingIgnoreCase(text).stream()
+        return itemRepository.findByAvailableTrueAndDescriptionContainingIgnoreCase(text, page).stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -141,7 +146,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь с id = " + userIdRequestFrom));
         Item item = getItemById(itemId);
         List<Booking> userBookings = bookingRepository
-                .findAllByBooker_IdAndItem_IdAndStartBefore(userIdRequestFrom, itemId, now);
+                .findAllByBooker_IdAndItem_IdAndStartBefore(userIdRequestFrom, itemId, now, null);
 
         log.info("Прошлые брони пользователя, который добавляет комментарий: {}", userBookings);
 
@@ -169,7 +174,7 @@ public class ItemServiceImpl implements ItemService {
         получаем брони для всех итемов
          */
         List<Booking> allBookingsForItems = bookingRepository
-                .findAllByItem_IdIn(new ArrayList<>(itemsIdsAndTheirDto.keySet()));
+                .findAllByItem_IdIn(new ArrayList<>(itemsIdsAndTheirDto.keySet()), null);
         log.info("Получены брони для списка итемов: {}", allBookingsForItems);
         /*
         хеш-мапа вида: итем -> все брони на этот итем

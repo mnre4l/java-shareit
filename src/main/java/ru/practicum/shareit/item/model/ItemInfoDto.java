@@ -1,11 +1,13 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class ItemInfoDto {
     private String name;
     /**
@@ -24,11 +26,24 @@ public class ItemInfoDto {
     private BookingDto nextBooking;
     private List<Comment> comments;
 
-    @Data
+    @Getter
+    @Setter
     public static class BookingDto {
         Long id;
         LocalDateTime start;
         LocalDateTime end;
         Long bookerId;
+    }
+
+    @Override
+    public String toString() {
+        return "ItemInfoDto{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", available=" + available +
+                ", id=" + id +
+                ", lastBooking=" + lastBooking +
+                ", nextBooking=" + nextBooking +
+                '}';
     }
 }

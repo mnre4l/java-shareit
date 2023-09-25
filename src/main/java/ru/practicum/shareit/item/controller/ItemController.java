@@ -13,11 +13,13 @@ import ru.practicum.shareit.utilities.models.Marker;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 
 /**
- * Класс-контроллер, обслуживающий исключения
+ * Класс-контроллер, обслуживающий вещи
  */
 @RestController
 @RequestMapping("/items")
@@ -28,7 +30,7 @@ public class ItemController {
     /*
     чекстайл не пропускает название с нижними подчеркиваниями и статические поля, оставил так
      */
-    private final String xSharerUserId = "X-Sharer-User-Id";
+    private static final String xSharerUserId = "X-Sharer-User-Id";
     /**
      * Сервис вещей
      */
@@ -104,9 +106,11 @@ public class ItemController {
      */
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> findItemsByText(@RequestParam("text") String text) {
+    public List<ItemDto> findItemsByText(@RequestParam("text") String text,
+                                         @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero Integer from,
+                                         @RequestParam(value = "size", defaultValue = "20") @Positive Integer size) {
         log.info("GET /items/search получен для text = " + text);
-        return itemService.findItemsBy(text);
+        return itemService.findItemsBy(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

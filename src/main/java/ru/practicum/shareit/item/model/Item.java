@@ -45,4 +45,17 @@ public class Item {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
     private List<Comment> comments;
+    @Column(name = "request_id")
+    private Long requestId;
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", available=" + available +
+                ", id=" + id +
+                ", requestId=" + requestId +
+                '}';
+    }
 }
