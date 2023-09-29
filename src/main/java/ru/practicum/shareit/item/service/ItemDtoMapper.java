@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.model.BookingDtoAfterApproving;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemDto;
 import ru.practicum.shareit.item.model.ItemInfoDto;
@@ -86,5 +87,10 @@ public class ItemDtoMapper {
     public ItemRequestDtoInfo.ItemForRequestDto toItemForRequestDto(Item item) {
         log.info("Item для маппинга в ItemRequestDtoInfo.ItemForRequestDto: {}", item);
         return mapper.map(item, ItemRequestDtoInfo.ItemForRequestDto.class);
+    }
+
+    public BookingDtoAfterApproving.Item toItemForBookingDto(Item item) {
+        log.info("Item для маппинга в BookingDtoAfterApproving.Item: {}", item);
+        return mapper.map(item, BookingDtoAfterApproving.Item.class);
     }
 }

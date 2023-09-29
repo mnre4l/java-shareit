@@ -86,6 +86,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoAfterApproving getBookingById(Long bookingId, Long userRequestFrom) {
+        User user = userRepository.findById(userRequestFrom)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id = " + userRequestFrom));
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Не найдена бронь с id = " + bookingId));
 

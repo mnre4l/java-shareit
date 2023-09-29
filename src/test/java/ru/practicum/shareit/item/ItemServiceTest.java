@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.exception.model.UserDidNotBookingItemException;
 import ru.practicum.shareit.exception.model.UserIsNotItemOwnerException;
 import ru.practicum.shareit.item.model.*;
-import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemDtoMapper;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
@@ -39,6 +40,7 @@ public class ItemServiceTest {
     private final ItemService itemService;
     private final BookingRepository bookingRepository;
     private final EntityManager em;
+    private final ItemRepository itemRepository;
     User itemOwner;
     Item item;
     @Autowired
@@ -46,6 +48,10 @@ public class ItemServiceTest {
 
     @BeforeEach
     void init() {
+        bookingRepository.deleteAll();
+        itemRepository.deleteAll();
+        userRepository.deleteAll();
+
         itemOwner = new User();
 
         itemOwner.setName("owner");
@@ -61,6 +67,13 @@ public class ItemServiceTest {
         item.setAvailable(true);
     }
 
+    @AfterEach
+    void afterEach() {
+        bookingRepository.deleteAll();
+        itemRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
     @Test
     void shouldCreateItem() {
         ItemDto itemDto = itemService.createItem(mapper.toDto(item), itemOwner.getId());
@@ -68,6 +81,14 @@ public class ItemServiceTest {
         assertThat(itemDto.getName(), equalTo(item.getName()));
         assertThat(itemDto.getAvailable(), equalTo(item.getAvailable()));
         assertThat(itemDto.getDescription(), equalTo(item.getDescription()));
+
+        TypedQuery<Item> query = em.createQuery("Select i from Item i where i.id = :id", Item.class);
+        Item item1 = query.setParameter("id", itemDto.getId())
+                .getSingleResult();
+
+        assertThat(item1.getName(), equalTo(item.getName()));
+        assertThat(item1.getAvailable(), equalTo(item.getAvailable()));
+        assertThat(item1.getDescription(), equalTo(item.getDescription()));
     }
 
     @Test

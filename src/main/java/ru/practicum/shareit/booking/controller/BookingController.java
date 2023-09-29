@@ -59,7 +59,9 @@ public class BookingController {
      */
     @PatchMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingDtoAfterApproving confirmBooking(@PathVariable final Long bookingId, @RequestHeader(xSharerUserId) @NotNull final Long ownerId, @RequestParam @NotNull final Boolean approved) {
+    public BookingDtoAfterApproving confirmBooking(@PathVariable final Long bookingId,
+                                                   @RequestHeader(xSharerUserId) @NotNull final Long ownerId,
+                                                   @RequestParam @NotNull final Boolean approved) {
         log.info("PATCH /bookings/bookingId получен для: bookingId = {}, от пользователя id = {}", bookingId, ownerId);
         return bookingService.confirmBooking(bookingId, ownerId, approved);
     }

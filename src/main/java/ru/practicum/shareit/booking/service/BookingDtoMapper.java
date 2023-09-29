@@ -8,7 +8,9 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingDtoAfterApproving;
 import ru.practicum.shareit.booking.model.BookingDtoAfterCreate;
 import ru.practicum.shareit.booking.model.BookingDtoOnCreate;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemInfoDto;
+import ru.practicum.shareit.item.service.ItemDtoMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,19 +20,23 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BookingDtoMapper {
     private final ModelMapper mapper;
+    private final ItemDtoMapper itemDtoMapper;
 
     public Booking fromDtoOnCreate(BookingDtoOnCreate bookingDtoOnCreate) {
         Booking booking = mapper.map(bookingDtoOnCreate, Booking.class);
         long itemId = bookingDtoOnCreate.getItemId();
 
         booking.getItem().setId(itemId);
-        /*
-        почему-то библиотечный маппер устанавливал значения id. пока не разобрался почему,
-        оставил явный нул
-         */
         booking.setId(null);
         log.info("Booking после маппинга: {}", booking);
         return booking;
+    }
+
+    public BookingDtoOnCreate toDtoOnCreate(Booking booking) {
+        BookingDtoOnCreate bookingDtoOnCreate = mapper.map(booking, BookingDtoOnCreate.class);
+
+        bookingDtoOnCreate.setItemId(booking.getItem().getId());
+        return bookingDtoOnCreate;
     }
 
     public BookingDtoAfterCreate toDtoAfterCreate(Booking booking) {
@@ -38,7 +44,11 @@ public class BookingDtoMapper {
     }
 
     public BookingDtoAfterApproving toDtoAfterApproving(Booking booking) {
-        return mapper.map(booking, BookingDtoAfterApproving.class);
+        BookingDtoAfterApproving bookingDtoAfterApproving = mapper.map(booking, BookingDtoAfterApproving.class);
+        Item item = booking.getItem();
+
+        bookingDtoAfterApproving.setItem(itemDtoMapper.toItemForBookingDto(item));
+        return bookingDtoAfterApproving;
     }
 
     public List<BookingDtoAfterCreate> toDtoAfterCreate(List<Booking> bookingList) {
