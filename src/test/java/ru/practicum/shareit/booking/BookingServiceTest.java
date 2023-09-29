@@ -547,4 +547,31 @@ public class BookingServiceTest {
             }
         }
     }
+
+    @Test
+    void shouldThrowAccessDenied() {
+        BookingDtoOnCreate bookingDtoOnCreate = new BookingDtoOnCreate();
+
+        LocalDateTime start = LocalDateTime.now().minusHours(1);
+        LocalDateTime end = start.minusHours(1);
+
+        bookingDtoOnCreate.setItemId(item.getId());
+        bookingDtoOnCreate.setStart(start);
+        bookingDtoOnCreate.setEnd(end);
+
+        BookingDtoAfterCreate booking = bookingService.createBooking(bookingDtoOnCreate, booker.getId());
+
+        User accessDeniedUser = new User();
+
+        accessDeniedUser.setEmail("no@no.ru");
+        accessDeniedUser.setName("no no no");
+
+        accessDeniedUser = userRepository.save(accessDeniedUser);
+
+        final Long accessDeniedUserId = accessDeniedUser.getId();
+
+        assertThrows(AccessDeniedException.class, () -> {
+            bookingService.getBookingById(booking.getId(), accessDeniedUserId);
+        });
+    }
 }

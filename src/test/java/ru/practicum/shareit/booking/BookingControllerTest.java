@@ -18,11 +18,12 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("Booking controller")
@@ -109,5 +110,73 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.id", is(bookingDtoAfterApproving.getId()), Long.class))
                 .andExpect(jsonPath("$.item.id", is(bookingDtoAfterApproving.getItem().getId()), Long.class))
                 .andExpect(jsonPath("$.booker.id", is(bookingDtoAfterApproving.getBooker().getId()), Long.class));
+    }
+
+    @Test
+    void shouldReturnBooking() throws Exception {
+        when(bookingService.getBookingById(Mockito.anyLong(), Mockito.anyLong()))
+                .thenReturn(bookingDtoAfterApproving);
+
+        mockMvc.perform(
+                        get("/bookings/{bookingId}", 1L)
+                                .header(xSharerUserId, 1L)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(bookingDtoAfterApproving)))
+                .andExpect(jsonPath("$.booker.id", is(bookingDtoAfterApproving.getBooker().getId()), Long.class))
+                .andExpect(jsonPath("$.item.id", is(bookingDtoAfterApproving.getItem().getId()), Long.class))
+                .andExpect(jsonPath("$.id", is(bookingDtoAfterApproving.getId()), Long.class));
+    }
+
+    @Test
+    void shouldReturnUserBookings() throws Exception {
+        when(bookingService.getUserBookings(Mockito.anyLong(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(List.of(bookingDtoAfterCreate));
+
+        mockMvc.perform(
+                        get("/bookings")
+                                .header(xSharerUserId, 1L)
+                                .param("state", "ALL")
+                                .param("from", "0")
+                                .param("size", "20")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(List.of(bookingDtoAfterCreate))))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].booker.id", is(bookingDtoAfterCreate.getBooker().getId()), Long.class))
+                .andExpect(jsonPath("$[0].item.id", is(bookingDtoAfterCreate.getItem().getId()), Long.class))
+                .andExpect(jsonPath("$[0].id", is(bookingDtoAfterCreate.getId()), Long.class));
+    }
+
+    @Test
+    void shouldReturnBookingsByOwner() throws Exception {
+        when(bookingService.getBookingsByOwner(Mockito.anyLong(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(List.of(bookingDtoAfterCreate));
+
+        mockMvc.perform(
+                        get("/bookings/owner")
+                                .header(xSharerUserId, 1L)
+                                .param("state", "ALL")
+                                .param("from", "0")
+                                .param("size", "20")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(List.of(bookingDtoAfterCreate))))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].booker.id", is(bookingDtoAfterCreate.getBooker().getId()), Long.class))
+                .andExpect(jsonPath("$[0].item.id", is(bookingDtoAfterCreate.getItem().getId()), Long.class))
+                .andExpect(jsonPath("$[0].id", is(bookingDtoAfterCreate.getId()), Long.class));
+    }
+
+    @Test
+    void shouldThrowBadBookingStatus() throws Exception {
+        mockMvc.perform(
+                        get("/bookings/owner")
+                                .header(xSharerUserId, 1L)
+                                .param("state", "whaaatisit")
+                                .param("from", "0")
+                                .param("size", "20")
+                )
+                .andExpect(status().isInternalServerError());
     }
 }

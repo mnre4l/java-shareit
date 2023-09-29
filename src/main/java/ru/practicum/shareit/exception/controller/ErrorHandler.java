@@ -31,18 +31,6 @@ public class ErrorHandler {
     }
 
     /**
-     * @param e исключение типа EmailAlreadyUsedException, выбрасываемое совпадении email создаваемого пользователя
-     *          с уже существующим
-     * @return объект ответа, содержащий сообщение об ошибке
-     */
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleEmailAlreadyUsedException(final EmailIsAlreadyUsedException e) {
-        log.info("Error: " + e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    /**
      * @param e исключение типа MissingRequestHeaderException
      * @return объект ответа, содержащий сообщение об ошибке
      */
