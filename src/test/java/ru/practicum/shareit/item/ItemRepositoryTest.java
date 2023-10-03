@@ -54,7 +54,7 @@ public class ItemRepositoryTest {
 
     @Test
     void shouldFindItemByOwnerId() {
-        List<Item> findResult = itemRepository.findByOwner_IdOrderByIdAsc(owner.getId());
+        List<Item> findResult = itemRepository.findByOwnerOrderByIdAsc(owner);
 
         assertThat(findResult.size(), equalTo(1));
 

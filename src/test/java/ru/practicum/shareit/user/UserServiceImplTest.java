@@ -80,6 +80,9 @@ public class UserServiceImplTest {
         assertThrows(NotFoundException.class, () -> {
             userService.getUserDtoById(Long.MAX_VALUE);
         });
+        /*
+        userDto = null
+         */
         assertThrows(NotFoundException.class, () -> {
             userService.updateUser(Long.MAX_VALUE, null);
         });

@@ -79,7 +79,7 @@ public class BookingRepositoryTest {
         booking = bookingRepository.save(booking);
 
         List<Booking> result = bookingRepository
-                .findAllByItem_IdAndStatus(item.getId(), Status.WAITING, Pageable.unpaged());
+                .findAllByItemAndStatus(item, Status.WAITING, Pageable.unpaged());
 
         assertThat(result.size(), equalTo(1));
 
@@ -95,7 +95,7 @@ public class BookingRepositoryTest {
         booking = bookingRepository.save(booking);
         Status status = Status.REJECTED;
         List<Booking> result = bookingRepository
-                .findAllByItem_IdAndStatus(item.getId(), status, Pageable.unpaged());
+                .findAllByItemAndStatus(item, status, Pageable.unpaged());
 
         assertThat(status, not(booking.getStatus()));
         assertThat(result.size(), equalTo(0));
@@ -107,15 +107,15 @@ public class BookingRepositoryTest {
 
         Item badItem = new Item();
 
-        item.setName("bad item");
-        item.setDescription("bad description");
-        item.setOwner(owner);
-        item.setAvailable(true);
+        badItem.setName("bad item");
+        badItem.setDescription("bad description");
+        badItem.setOwner(owner);
+        badItem.setAvailable(true);
 
-        item = itemRepository.save(item);
+        badItem = itemRepository.save(badItem);
 
         List<Booking> result = bookingRepository
-                .findAllByItem_IdAndStatus(badItem.getId(), Status.WAITING, Pageable.unpaged());
+                .findAllByItemAndStatus(badItem, Status.WAITING, Pageable.unpaged());
 
         assertThat(result.size(), equalTo(0));
     }
@@ -124,7 +124,7 @@ public class BookingRepositoryTest {
     void shouldFindByBookerId() {
         booking = bookingRepository.save(booking);
         List<Booking> result = bookingRepository
-                .findAllByBooker_IdAndStatus(booker.getId(), booking.getStatus(), Pageable.unpaged());
+                .findAllByBookerAndStatus(booker, booking.getStatus(), Pageable.unpaged());
 
         assertThat(result.size(), equalTo(1));
 
@@ -134,13 +134,16 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    void shouldFindNothingWhenBadBookerId() {
+    void shouldFindNothingWhenBadBooker() {
         booking = bookingRepository.save(booking);
 
-        Long badBookerId = booker.getId() + 12345L;
+        User badBooker = new User();
+        badBooker.setEmail("bad@bad.com");
+        badBooker.setName("bad");
+        badBooker = userRepository.save(badBooker);
 
         List<Booking> badRequestResult = bookingRepository
-                .findAllByBooker_IdAndStatus(badBookerId, booking.getStatus(), Pageable.unpaged());
+                .findAllByBookerAndStatus(badBooker, booking.getStatus(), Pageable.unpaged());
 
         assertThat(badRequestResult.size(), equalTo(0));
     }
@@ -151,8 +154,8 @@ public class BookingRepositoryTest {
         LocalDateTime goodStart = booking.getStart().minusHours(1);
 
         List<Booking> result = bookingRepository
-                .findAllByBooker_IdAndStartAfterOrderByStartDesc(
-                        booker.getId(),
+                .findAllByBookerAndStartAfterOrderByStartDesc(
+                        booker,
                         goodStart,
                         Pageable.unpaged()
                 );
@@ -165,8 +168,8 @@ public class BookingRepositoryTest {
         LocalDateTime badStart = booking.getStart().plusHours(1);
 
         List<Booking> result = bookingRepository
-                .findAllByBooker_IdAndStartAfterOrderByStartDesc(
-                        booker.getId(),
+                .findAllByBookerAndStartAfterOrderByStartDesc(
+                        booker,
                         badStart,
                         Pageable.unpaged()
                 );
@@ -179,8 +182,8 @@ public class BookingRepositoryTest {
         LocalDateTime goodEnd = booking.getEnd().plusYears(999);
 
         List<Booking> result = bookingRepository
-                .findAllByBooker_IdAndEndBeforeOrderByStartDesc(
-                        booker.getId(),
+                .findAllByBookerAndEndBeforeOrderByStartDesc(
+                        booker,
                         goodEnd,
                         Pageable.unpaged()
                 );
@@ -193,8 +196,8 @@ public class BookingRepositoryTest {
         LocalDateTime badEnd = booking.getEnd().minusYears(999);
 
         List<Booking> result = bookingRepository
-                .findAllByBooker_IdAndEndBeforeOrderByStartDesc(
-                        booker.getId(),
+                .findAllByBookerAndEndBeforeOrderByStartDesc(
+                        booker,
                         badEnd,
                         Pageable.unpaged()
                 );

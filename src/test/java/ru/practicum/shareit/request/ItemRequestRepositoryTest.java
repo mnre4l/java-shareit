@@ -75,8 +75,7 @@ public class ItemRequestRepositoryTest {
     @Test
     void shouldReturnNothingWhenRequestByNotUserIdWithBadUserId() {
         itemRequest = itemRequestRepository.save(itemRequest);
-        Long requestCreaterId = requester.getId();
-        List<ItemRequest> requests = itemRequestRepository.getAllByUser_IdNot(requestCreaterId, Pageable.unpaged());
+        List<ItemRequest> requests = itemRequestRepository.getAllByUserNot(requester, Pageable.unpaged());
 
         assertThat(requests.size(), equalTo(0));
     }

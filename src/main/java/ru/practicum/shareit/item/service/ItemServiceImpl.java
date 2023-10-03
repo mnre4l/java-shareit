@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
@@ -96,10 +97,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemInfoDto> getItemsByOwnerId(long userId) {
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь id = " + userId));
         /*
         список Item принадлежащих пользователю
          */
-        List<Item> userItems = itemRepository.findByOwner_IdOrderByIdAsc(userId);
+        List<Item> userItems = itemRepository.findByOwnerOrderByIdAsc(owner);
         List<ItemInfoDto> userItemsDto = itemMapper.toItemInfoDto(userItems);
 
         setLastAndNextBookingsTo(userItemsDto, LocalDateTime.now());
@@ -146,7 +149,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь с id = " + userIdRequestFrom));
         Item item = getItemById(itemId);
         List<Booking> userBookings = bookingRepository
-                .findAllByBooker_IdAndItem_IdAndStartBefore(userIdRequestFrom, itemId, now, null);
+                .findAllByBookerAndItemAndStartBefore(user, item, now, Pageable.unpaged());
 
         log.info("Прошлые брони пользователя, который добавляет комментарий: {}", userBookings);
 
@@ -174,7 +177,7 @@ public class ItemServiceImpl implements ItemService {
         получаем брони для всех итемов
          */
         List<Booking> allBookingsForItems = bookingRepository
-                .findAllByItem_IdIn(new ArrayList<>(itemsIdsAndTheirDto.keySet()), null);
+                .findAllByItem_IdIn(new ArrayList<>(itemsIdsAndTheirDto.keySet()), Pageable.unpaged());
         log.info("Получены брони для списка итемов: {}", allBookingsForItems);
         /*
         хеш-мапа вида: итем -> все брони на этот итем
