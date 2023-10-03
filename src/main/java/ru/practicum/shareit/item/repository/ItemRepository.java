@@ -1,7 +1,9 @@
 package ru.practicum.shareit.item.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -12,10 +14,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     /**
      * Получение всех вещей пользователя по id пользователя.
      *
-     * @param userId id пользователя, вещи которого будут получены.
+     * @param owner пользователь, вещи которого будут получены.
      * @return список вещей, добавленных пользователем.
      */
-    List<Item> findByOwner_IdOrderByIdAsc(long userId);
+    List<Item> findByOwnerOrderByIdAsc(User owner);
 
     /**
      * Поиск всех вещей, в описании или в названии которых содержится текст.
@@ -23,5 +25,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * @param someText текст, по которому будет поиск.
      * @return список подходящих вещей.
      */
-    List<Item> findByAvailableTrueAndDescriptionContainingIgnoreCase(String someText);
+    List<Item> findByAvailableTrueAndDescriptionContainingIgnoreCase(String someText, Pageable p);
 }

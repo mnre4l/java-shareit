@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.*;
@@ -12,6 +14,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserBookingStates;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.utilities.models.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -84,6 +87,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoAfterApproving getBookingById(Long bookingId, Long userRequestFrom) {
+        User user = userRepository.findById(userRequestFrom)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id = " + userRequestFrom));
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Не найдена бронь с id = " + bookingId));
 
@@ -92,36 +97,37 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoAfterCreate> getUserBookings(Long userId, UserBookingStates state) {
+    public List<BookingDtoAfterCreate> getUserBookings(Long userId, UserBookingStates state, Integer from, Integer size) {
         User booker = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id = " + userId));
+        Page page = new Page(from, size, Sort.unsorted());
 
         switch (state) {
             case ALL: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByBooker_IdOrderByStartDesc(booker.getId());
+                        .findAllByBookerOrderByStartDesc(booker, page);
                 return mapper.toDtoAfterCreate(bookingList);
             }
             case FUTURE: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByBooker_IdAndStartAfterOrderByStartDesc(booker.getId(), LocalDateTime.now());
+                        .findAllByBookerAndStartAfterOrderByStartDesc(booker, LocalDateTime.now(), page);
                 return mapper.toDtoAfterCreate(bookingList);
             }
             case PAST: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByBooker_IdAndEndBeforeOrderByStartDesc(booker.getId(), LocalDateTime.now());
+                        .findAllByBookerAndEndBeforeOrderByStartDesc(booker, LocalDateTime.now(), page);
                 return mapper.toDtoAfterCreate(bookingList);
             }
             case CURRENT: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(booker.getId(),
-                                LocalDateTime.now(), LocalDateTime.now());
+                        .findAllByBookerAndStartBeforeAndEndAfterOrderByStartDesc(booker,
+                                LocalDateTime.now(), LocalDateTime.now(), page);
                 return mapper.toDtoAfterCreate(bookingList);
             }
             default: {
                 String status = state.name();
                 List<Booking> bookingList = bookingRepository
-                        .findAllByBooker_IdAndStatus(booker.getId(), Status.valueOf(status));
+                        .findAllByBookerAndStatus(booker, Status.valueOf(status), page);
 
                 return mapper.toDtoAfterCreate(bookingList);
             }
@@ -129,36 +135,37 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoAfterCreate> getBookingsByOwner(Long ownerId, UserBookingStates state) {
+    public List<BookingDtoAfterCreate> getBookingsByOwner(Long ownerId, UserBookingStates state, Integer from, Integer size) {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id = " + ownerId));
+        Page page = new Page(from, size, Sort.unsorted());
 
         switch (state) {
             case ALL: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByItem_Owner_IdOrderByStartDesc(owner.getId());
+                        .findAllByItem_OwnerOrderByStartDesc(owner, page);
                 return mapper.toDtoAfterCreate(bookingList);
             }
             case FUTURE: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByItem_Owner_IdAndStartAfterOrderByStartDesc(owner.getId(), LocalDateTime.now());
+                        .findAllByItem_OwnerAndStartAfterOrderByStartDesc(owner, LocalDateTime.now(), page);
                 return mapper.toDtoAfterCreate(bookingList);
             }
             case PAST: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByItem_Owner_IdAndEndBeforeOrderByStartDesc(owner.getId(), LocalDateTime.now());
+                        .findAllByItem_OwnerAndEndBeforeOrderByStartDesc(owner, LocalDateTime.now(), page);
                 return mapper.toDtoAfterCreate(bookingList);
             }
             case CURRENT: {
                 List<Booking> bookingList = bookingRepository
-                        .findAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(owner.getId(),
-                                LocalDateTime.now(), LocalDateTime.now());
+                        .findAllByItem_OwnerAndStartBeforeAndEndAfterOrderByStartDesc(owner,
+                                LocalDateTime.now(), LocalDateTime.now(), page);
                 return mapper.toDtoAfterCreate(bookingList);
             }
             default: {
                 String status = state.name();
                 List<Booking> bookingList = bookingRepository
-                        .findAllByItem_Owner_IdAndStatus(owner.getId(), Status.valueOf(status));
+                        .findAllByItem_OwnerAndStatus(owner, Status.valueOf(status), page);
 
                 return mapper.toDtoAfterCreate(bookingList);
             }
@@ -180,7 +187,7 @@ public class BookingServiceImpl implements BookingService {
         /*
         получаем все подтвержденные брони для интересующей вещи
          */
-        List<Booking> itemBookings = bookingRepository.findAllByItem_IdAndStatus(item.getId(), Status.APPROVED);
+        List<Booking> itemBookings = bookingRepository.findAllByItemAndStatus(item, Status.APPROVED, Pageable.unpaged());
 
         for (Booking booking : itemBookings) {
             LocalDateTime notAvailableStart = booking.getStart();

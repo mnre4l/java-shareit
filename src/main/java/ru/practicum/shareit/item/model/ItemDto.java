@@ -27,4 +27,5 @@ public class ItemDto {
      * Идентификатор вещи.
      */
     private Long id;
+    private Long requestId;
 }

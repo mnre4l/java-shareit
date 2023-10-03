@@ -60,7 +60,7 @@ public interface ItemService {
      * @param text текст, содержащий описание
      * @return списо подходящих вещей
      */
-    List<ItemDto> findItemsBy(String text);
+    List<ItemDto> findItemsBy(String text, Integer from, Integer size);
 
     Item getItemById(long itemId);
 

@@ -1,10 +1,12 @@
 package ru.practicum.shareit.booking.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 public class BookingDtoAfterApproving {
     private long id;
     private LocalDateTime start;
@@ -14,13 +16,15 @@ public class BookingDtoAfterApproving {
     private Item item;
 
 
-    @Data
-    private static class Booker {
+    @Getter
+    @Setter
+    public static class Booker {
         long id;
     }
 
-    @Data
-    private static class Item {
+    @Getter
+    @Setter
+    public static class Item {
         long id;
         String name;
     }
